@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import TextField from "@material-ui/core/TextField";
 import { faIdCard } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,7 +9,6 @@ import {
   VpnKey,
   ContactPhone
 } from "@material-ui/icons/";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import Button from "@material-ui/core/Button";
 import _ from "lodash";
 import Loading from "../../../../../utils/Loading2";
@@ -53,12 +51,6 @@ class RequestModal extends Component {
     });
   };
 
-  handleDataModal = () => {
-    const { handleModal, privateKeyData } = this.props;
-    const { privateKey } = this.state;
-    privateKeyData(privateKey);
-    handleModal();
-  };
 
   handleDecryptData = async () => {
     const { privateKey } = this.state;
@@ -82,20 +74,18 @@ class RequestModal extends Component {
     ).toString();
 
     // encrypt data
-    const keyPrivateData = ["hashImage", "privateKey", "email"];
+    // const keyPrivateData = ["hashImage", "privateKey", "email"];
     let privateDataUser = "";
     let imageArray = [];
     try {
       // privateKeyUser = decryptText(data.privData, secrectKey)
       // decrypt image
       await callGetIPFS(data.privData).then(res => {
-        console.log(res);
         imageArray = this.decryptImageData(
           res.data.dataEncryptedImage,
           secrectKey
         );
         privateDataUser = JSON.parse(decryptText(res.data.privateData, secrectKey));
-        console.log(privateDataUser);
         this.setState({
           imageArray,
           privateDataUser,
@@ -140,8 +130,7 @@ class RequestModal extends Component {
 
   render() {
     const { privateKey, isLoading, isError, privateDataUser, imageArray } = this.state;
-    const { isOpen, handleModal, dataUser } = this.props;
-    console.log(dataUser, privateDataUser)
+    const { isOpen, handleModal, dataUser, handleVerifiedUser } = this.props;
     return (
       <Modal
         isOpen={isOpen}
@@ -259,10 +248,10 @@ class RequestModal extends Component {
           </Fragment>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={this.handleDataModal}>
+          <Button color="primary" onClick={() => handleVerifiedUser(true)}>
             Allow
           </Button>{" "}
-          <Button color="secondary" onClick={this.handleDataModal}>
+          <Button color="secondary" onClick={() => handleVerifiedUser(false)}>
             Reject
           </Button>{" "}
         </ModalFooter>
